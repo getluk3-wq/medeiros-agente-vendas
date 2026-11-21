@@ -1,0 +1,22 @@
+{
+  "name": "medeiros-agente-vendas",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "socket.io": "^4.8.1",
+    "whatsapp-web.js": "^1.26.0",
+    "qrcode": "^1.5.4"
+  }
+}
