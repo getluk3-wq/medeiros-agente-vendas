@@ -8,6 +8,7 @@ const path=require('path');
 const {Server}=require('socket.io');
 const db=require('./db');
 const wa=require('./whatsapp');
+const assistant=require('./assistant');
 
 const app=express();
 const server=http.createServer(app);
@@ -69,9 +70,22 @@ app.get('/api/summary',(req,res)=>res.json({
 app.get('/api/settings',(req,res)=>res.json(Object.fromEntries(db.prepare('SELECT key,value FROM settings').all().map(x=>[x.key,x.value]))));
 app.put('/api/settings',(req,res)=>{
   const allowed=['business_name','owner_whatsapp','greeting','discount_limit','ai_enabled'];
+  if(req.body?.ai_enabled==='1'&&!assistant.aiConfigured())
+    return res.status(400).json({error:'Antes de ativar a IA, configure AI_BASE_URL, AI_API_KEY e AI_MODEL no ambiente do Render.'});
   const save=db.prepare('INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value');
   for(const k of allowed)if(req.body?.[k]!==undefined)save.run(k,String(req.body[k]).slice(0,2000));
   res.json({ok:true});
+});
+app.get('/api/ai/status',(req,res)=>res.json({
+ configured:assistant.aiConfigured(),
+ enabled:Object.fromEntries(db.prepare('SELECT key,value FROM settings WHERE key=?').all('ai_enabled')).ai_enabled==='1',
+ provider:process.env.AI_BASE_URL&&process.env.AI_BASE_URL.includes('groq.com')?'Groq':'Provedor configurado',
+ model:process.env.AI_MODEL||''
+}));
+app.post('/api/ai/test',async(req,res)=>{
+ if(!assistant.aiConfigured())return res.status(400).json({error:'A chave da IA ainda não foi configurada no Render.'});
+ try{res.json(await assistant.testConnection());}
+ catch(e){res.status(502).json({error:e.message||'Falha ao testar a IA.'});}
 });
 for(const table of ['services','products']){
   app.get('/api/'+table,(req,res)=>res.json(db.prepare('SELECT * FROM '+table+' ORDER BY id DESC').all()));
