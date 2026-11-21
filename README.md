@@ -1,17 +1,23 @@
-# Agente de Vendas MEDEIROS DIGITAL
+# MEDEIROS DIGITAL — Agente de Vendas
 
-Projeto inicial independente do robô atual.
+Projeto independente do robô de divulgação existente.
 
-## Rodar localmente
-1. Instale Node.js 20 ou superior.
-2. Copie `.env.example` para `.env`.
-3. Altere `ADMIN_PASSWORD` e `SESSION_SECRET`.
-4. Execute `npm install` e depois `npm start`.
-5. Abra `http://localhost:3000`.
+## Estrutura atual
+Os arquivos do projeto ficam na raiz do repositório: `server.js`, `db.js`, `assistant.js`, `whatsapp.js` e `index.html`.
 
-## Importante
-- Esta é uma primeira versão técnica/MVP, ainda precisa de testes e endurecimento de segurança antes de produção.
-- A conversa com IA de verdade é opcional e requer credenciais de um provedor compatível com API OpenAI. Sem isso, há apenas respostas básicas; não é correto prometer IA completa e ilimitada sem custo.
-- O WhatsApp Web só conecta com `WHATSAPP_ENABLED=true` e leitura do QR. Não conecte a mesma conta em duas sessões independentes simultaneamente. Para preservar o atendimento existente, precisamos escolher coexistência oficial ou migrar a conexão.
-- O bot responde mensagens privadas recebidas e ignora grupos; não faz prospecção em massa. Prospecção exige contatos autorizados e abordagem responsável.
-- Configure HTTPS, armazenamento persistente, backups e política de privacidade/LGPD antes de publicar.
+## Render
+- Build Command: `npm install`
+- Start Command: `npm start`
+- Runtime: Node 20 ou superior
+- Configure `ADMIN_USER`, `ADMIN_PASSWORD` (mínimo 12 caracteres) e `SESSION_SECRET` (mínimo 32 caracteres).
+- Configure um disco persistente montado em `/opt/render/project/src/data` e defina `DATA_DIR=/opt/render/project/src/data` para preservar o banco SQLite. Sem disco persistente, os dados podem ser perdidos em reinicializações/redeploys.
+- `WHATSAPP_ENABLED=false` deve permanecer assim até definirmos como conectar sem interromper a sessão do robô antigo.
+- `/health` é o endpoint público de verificação.
+
+## Limitações importantes
+- Esta é uma base MVP e ainda exige testes funcionais e revisão de segurança antes de atender clientes.
+- O modo de IA depende de um provedor compatível com API OpenAI e credenciais próprias. Sem elas, há respostas básicas por regras; não há IA ilimitada gratuita.
+- A sessão do painel usa armazenamento em memória nesta versão e será encerrada em reinicializações.
+- O WhatsApp Web usa Chromium/Puppeteer e pode exigir configuração adicional no Render.
+- Não conecte o mesmo número em duas sessões independentes. Precisamos decidir coexistência oficial ou migração para não derrubar o robô antigo.
+- Use apenas contatos autorizados; não faça disparos em massa. Implemente política de privacidade, aviso de atendimento automatizado e controles LGPD antes da operação comercial.
