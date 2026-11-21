@@ -78,7 +78,7 @@ app.put('/api/settings',(req,res)=>{
 });
 app.get('/api/ai/status',(req,res)=>res.json({
  configured:assistant.aiConfigured(),
- enabled:Object.fromEntries(db.prepare('SELECT key,value FROM settings WHERE key=?').all('ai_enabled')).ai_enabled==='1',
+ enabled:db.prepare('SELECT value FROM settings WHERE key=?').get('ai_enabled')?.value==='1',
  provider:process.env.AI_BASE_URL&&process.env.AI_BASE_URL.includes('groq.com')?'Groq':'Provedor configurado',
  model:process.env.AI_MODEL||''
 }));
